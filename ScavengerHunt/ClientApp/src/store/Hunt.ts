@@ -31,11 +31,12 @@ export const actionCreators = {
 		submitResponse(answer, page)
 		.then(data => {
 			if (data.correct) {
+				const page = data.page as Page;
 				dispatch({
 					type: NEXT_PAGE,
-					header: data.page.header,
-					content: data.page.content,
-					hasInputField: data.page.hasInputField
+					header: page.header,
+					content: page.content,
+					hasInputField: page.hasInputField
 				});
 			} else {
 				dispatch({ type: INCORRECT_ANSWER, message: data.message as string });
@@ -67,9 +68,12 @@ export const reducer: Reducer<HuntState> = (state: HuntState | undefined, incomi
 				...state,
 				page: state.page + 1,
 				pageText: {
-					action.text
+					content: action.content,
+					hasInputField: action.hasInputField,
+					header: action.header
 				},
-				isLoading: false
+				isLoading: false,
+				message: undefined
 			};
 		case INCORRECT_ANSWER:
 			return {
