@@ -6,8 +6,8 @@ import { Page } from '../services/Hunt/SubmitResponse';
 
 export interface HuntState {
 	isLoading: boolean;
-	page: number;
-	pageText: Page;
+	pageNumber: number;
+	page: Page;
 	message?: string;
 }
 
@@ -26,9 +26,9 @@ export const actionCreators = {
 		dispatch({ type: SUBMITTING });
 
 		const appState = getState();
-		const { page } = appState.hunt as HuntState;
+		const { pageNumber } = appState.hunt as HuntState;
 
-		submitResponse(answer, page)
+		submitResponse(answer, pageNumber)
 		.then(data => {
 			if (data.correct) {
 				const page = data.page as Page;
@@ -51,8 +51,8 @@ export const actionCreators = {
 export const reducer: Reducer<HuntState> = (state: HuntState | undefined, incomingAction: Action): HuntState => {
 	if (state === undefined) {
 		return {
-			page: 0,
-			pageText: {
+			pageNumber: 0,
+			page: {
 				header: 'Hello Hunters!',
 				content: 'Welcome to the scavenger hunt! To continue, click the submit button below.',
 				hasInputField: false
@@ -66,8 +66,8 @@ export const reducer: Reducer<HuntState> = (state: HuntState | undefined, incomi
 		case NEXT_PAGE:
 			return {
 				...state,
-				page: state.page + 1,
-				pageText: {
+				pageNumber: state.pageNumber + 1,
+				page: {
 					content: action.content,
 					hasInputField: action.hasInputField,
 					header: action.header
