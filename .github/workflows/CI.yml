@@ -36,6 +36,14 @@ jobs:
       with:
         dotnet-version: '3.1.100'
         
+    - name: Install .NET Dependencies
+      run: dotnet restore ScavengerHunt.sln
+      working-directory: Source
+        
     - name: Build Site in ${{ matrix.configuration }} Mode
-      run: dotnet build -c ${{ matrix.configuration }} ScavengerHunt.sln
+      run: dotnet build -c ${{ matrix.configuration }} --no-restore ScavengerHunt.sln
+      working-directory: Source
+
+    - name: Test in ${{ matrix.configuration }} Mode
+      run: dotnet test -c ${{ matrix.configuration }} --no-restore ScavengerHunt.sln
       working-directory: Source
