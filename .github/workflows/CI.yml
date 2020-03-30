@@ -36,6 +36,6 @@ jobs:
       with:
         dotnet-version: '3.1.100'
         
-    - name: Build Site in {{ matrix.configuration }} Mode
-      run: dotnet build -c {{ matrix.configuration }} ScavengerHunt.sln
+    - name: Build Site in ${{ matrix.configuration }} Mode
+      run: dotnet build -c ${{ matrix.configuration }} ScavengerHunt.sln
       working-directory: Source
