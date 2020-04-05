@@ -4,7 +4,7 @@ import Layout from './components/Layout';
 import Home from './components/Home';
 import Hunt from './components/Hunt';
 
-import './custom.css'
+import './custom.scss'
 
 export default () => (
 	<Layout>

@@ -5,7 +5,16 @@ export interface ISubmitResponse {
 }
 
 export interface Page {
-	header: string;
+	huntStepId: number;
+	title: string;
 	content: string;
-	hasInputField: boolean;
+	image?: string;
+	url?: string;
+	isFinished: boolean;
 };
+
+export interface Hunt {
+	huntId: number;
+	name: string;
+	description: string;
+}
