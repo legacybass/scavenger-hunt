@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import * as HuntStore from '../../store/Hunt';
-import { Loader } from '../Loader';
+import * as HuntStore from '../../../store/Hunt';
+import { Loader } from '../../Loader';
 
 type HuntProps = HuntStore.HuntState
 	& typeof HuntStore.actionCreators
@@ -21,7 +21,8 @@ export class Hunt extends React.PureComponent<HuntProps> {
 	}
 
 	componentDidMount() {
-		this.props.getHunt();
+		const huntId = (this.props.match.params as any).id;
+		this.props.getHunt(huntId);
 	}
 
 	protected Submit() {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -97,6 +98,13 @@ namespace ScavengerHunt.Hunts.Implementation
 				return null;
 
 			return Mapper.Map<HuntStep>(firstStep);
+		});
+
+		public Task<IEnumerable<Hunt>> GetHunts() => Task.Run(() =>
+		{
+			var hunts = HuntRepository.Entity.AreActive();
+
+			return hunts.Select(h => Mapper.Map<Hunt>(h)).AsEnumerable();
 		});
 	}
 }

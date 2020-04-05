@@ -1,9 +1,8 @@
 import { Action, Reducer } from 'redux';
 import { AppThunkAction } from '.';
 import { submitResponse, firstPage, getHunt } from '../services/Hunt/HuntService';
-import { Page, Hunt } from '../services/Hunt/SubmitResponse';
-import environment from '../environment';
-
+import { Hunt } from '../services/Hunt/Hunt';
+import { Page } from '../services/Hunt/Page';
 
 export interface HuntState {
 	isLoading: boolean;
@@ -34,11 +33,11 @@ interface SubmittingAnswerAction { type: typeof SUBMITTING; };
 type KnownAction = IncorrectAnswerAction | NextPageAction | SubmittingAnswerAction | GetHuntAction | GetHuntFailedAction;
 
 export const actionCreators = {
-	getHunt: (): AppThunkAction<KnownAction> => async (dispatch) => {
+	getHunt: (huntId: number): AppThunkAction<KnownAction> => async (dispatch) => {
 		dispatch({ type: SUBMITTING });
 
 		try {
-			const hunt = await getHunt(undefined, environment.game);
+			const hunt = await getHunt(huntId);
 			dispatch({
 				type: UPDATE_HUNT,
 				...hunt
@@ -95,6 +94,9 @@ export const reducer: Reducer<HuntState> = (state: HuntState | undefined, incomi
 			huntId: -1
 		};
 	}
+
+	if (state.message)
+		delete state.message;
 
 	const action = incomingAction as KnownAction;
 	switch(action.type) {

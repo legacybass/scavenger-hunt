@@ -23,5 +23,13 @@ namespace ScavengerHunt.Hunts.Implementation
 
 			return queryable.Where(h => h.Name == name);
 		}
+
+		public static IQueryable<Data.Hunt> AreActive(this IQueryable<Data.Hunt> queryable)
+		{
+			if (queryable == null)
+				return null;
+
+			return queryable.Where(h => !h.Inactive);
+		}
 	}
 }

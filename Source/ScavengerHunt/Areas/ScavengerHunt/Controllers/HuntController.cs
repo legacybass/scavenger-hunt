@@ -28,6 +28,20 @@ namespace ScavengerHunt.Areas.ScavengerHunt.Controllers
 		}
 
 		[ActionName("Get")]
+		public async Task<IActionResult> GetHunts()
+		{
+			var hunts = await HuntService.GetHunts();
+
+			if (hunts != null && hunts.Any())
+			{
+				var viewModels = hunts.Select(Mapper.Map<HuntViewModel>);
+				return Json(viewModels);
+			}
+
+			return NoContent();
+		}
+
+		[HttpGet]
 		public async Task<HuntViewModel> GetHunt([FromQuery] string huntName, [FromQuery] int? huntId)
 		{
 			if (string.IsNullOrWhiteSpace(huntName) && !huntId.HasValue)
