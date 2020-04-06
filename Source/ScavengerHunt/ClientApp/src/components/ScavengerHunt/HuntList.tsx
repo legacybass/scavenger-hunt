@@ -12,6 +12,10 @@ type ListProps = HuntListStore.HuntListState
 	& RouteComponentProps<{}>;
 
 export class HuntList extends React.PureComponent<ListProps> {
+	public componentDidMount() {
+		this.props.getHunts();
+	}
+
 	public render() {
 		return (
 			<div>
@@ -20,7 +24,7 @@ export class HuntList extends React.PureComponent<ListProps> {
 				<h2>Please select from the list of scavenger hunts below</h2>
 				<ul>
 					{Array.isArray(this.props.hunts) && this.props.hunts.map((hunt: Hunt) => (
-						<li>
+						<li key={hunt.huntId}>
 							<NavLink tag={Link} className="text-dark" to={`/hunt/${hunt.huntId}`}>{hunt.name}</NavLink>
 						</li>
 					))}

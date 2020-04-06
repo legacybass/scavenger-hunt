@@ -11,5 +11,6 @@ namespace ScavengerHunt.Hunts
 		Task<Hunt> GetHunt(string huntName);
 		Task<HuntStep> GetFirstStep(int huntId);
 		Task<HuntStep> CheckResponse(int huntStepId, string response);
+		Task<IEnumerable<HuntStep>> GetNext(int huntStepId);
 	}
 }

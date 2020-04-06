@@ -33,7 +33,7 @@ namespace ScavengerHunt.Hunts.Implementation
 			if (string.IsNullOrWhiteSpace(response))
 				return null;
 
-			response = response.Trim();
+			response = response.Trim().ToLowerInvariant();
 
 			Logger.LogDebug($"Checking step response for {huntStepId}");
 
@@ -49,9 +49,9 @@ namespace ScavengerHunt.Hunts.Implementation
 			{
 				if (ns.CorrectResponse.Contains("|"))
 				{
-					return ns.CorrectResponse.Split('|').Any(cr => cr.Trim() == response);
+					return ns.CorrectResponse.Split('|').Any(cr => cr.Trim().ToLowerInvariant() == response);
 				}
-				else if (ns.CorrectResponse == response)
+				else if (ns.CorrectResponse.ToLowerInvariant() == response)
 					return true;
 
 				return false;
@@ -105,6 +105,20 @@ namespace ScavengerHunt.Hunts.Implementation
 			var hunts = HuntRepository.Entity.AreActive();
 
 			return hunts.Select(h => Mapper.Map<Hunt>(h)).AsEnumerable();
+		});
+
+		public Task<IEnumerable<HuntStep>> GetNext(int huntStepId) => Task.Run(() =>
+		{
+			var nextSteps = HuntStepLinkRepository.Entity
+			.Include(hsl => hsl.Next)
+			.ByHuntStep(huntStepId);
+
+			if (nextSteps != null && nextSteps.Any())
+			{
+				return nextSteps.Select(hsl => Mapper.Map<HuntStep>(hsl.Next)).AsEnumerable();
+			}
+
+			return null;
 		});
 	}
 }

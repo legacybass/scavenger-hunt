@@ -23,6 +23,8 @@ namespace ScavengerHunt.Areas.ScavengerHunt.ViewModels
 
 		public int HuntId { get; set; }
 
+		public bool IsFinished { get; set; }
+
 		public HuntViewModel Hunt { get; set; }
 
 		public IEnumerable<HuntStepViewModel> NextSteps { get; set; }

@@ -14,5 +14,7 @@ namespace ScavengerHunt.Hunts.Implementation
 
 			return query.Where(hs => hs.HuntId == huntId);
 		}
+
+		public static IQueryable<Data.HuntStep> ById(this IQueryable<Data.HuntStep> queryable, int huntStepId) => queryable?.Where(hs => hs.HuntStepId == huntStepId);
 	}
 }

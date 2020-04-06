@@ -46,7 +46,7 @@ export class Hunt extends React.PureComponent<HuntProps> {
 
 				{this.props.page.url && <a href={this.props.page.url}>{this.props.page.url}</a>}
 
-				{this.props.message && <p>{this.props.message}</p>}
+				{this.props.message && <p className="alert alert-danger">{this.props.message}</p>}
 
 				{this.props.page.huntStepId === -1
 					? <form onSubmit={(event) => { event.preventDefault(); this.Continue(); }}>

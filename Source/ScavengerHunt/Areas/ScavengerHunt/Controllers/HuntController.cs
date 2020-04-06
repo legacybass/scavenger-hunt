@@ -79,6 +79,10 @@ namespace ScavengerHunt.Areas.ScavengerHunt.Controllers
 				return BadRequest("That response was incorrect");
 
 			var mapped = Mapper.Map<HuntStepViewModel>(next);
+
+			var possibleNextSteps = await HuntService.GetNext(next.HuntStepId);
+
+			mapped.IsFinished = possibleNextSteps == null || !possibleNextSteps.Any();
 			return Json(mapped);
 		}
 
