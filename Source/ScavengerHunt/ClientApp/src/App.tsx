@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route } from 'react-router';
+import { Route, Redirect } from 'react-router';
 import Layout from './components/Layout';
 import Home from './components/Home';
 import Hunt from './components/ScavengerHunt/Hunt';
@@ -12,5 +12,6 @@ export default () => (
 		<Route exact path='/' component={Home} />
 		<Route exact path='/hunt' component={HuntList} />
 		<Route path='/hunt/:id' component={Hunt} />
+		<Redirect to='/' />
 	</Layout>
 );

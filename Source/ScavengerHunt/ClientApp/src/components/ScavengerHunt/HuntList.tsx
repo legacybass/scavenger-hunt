@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
-import { NavLink } from 'reactstrap';
+import { RouteComponentProps, Redirect,  } from 'react-router';
+import { NavLink, CardColumns, Card, CardImg, CardBody, CardTitle, CardText } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
 import * as HuntListStore from '../../store/HuntList';
@@ -12,24 +12,40 @@ type ListProps = HuntListStore.HuntListState
 	& RouteComponentProps<{}>;
 
 export class HuntList extends React.PureComponent<ListProps> {
+	state = {
+		location: ''
+	}
+
 	public componentDidMount() {
 		this.props.getHunts();
 	}
 
-	public render() {
-		return (
-			<div>
-				{this.props.isLoading && <Loader></Loader>}
+	public componentWillUnmount() {
+		this.setState({ location: '' });
+	}
 
-				<h2>Please select from the list of scavenger hunts below</h2>
-				<ul>
+	public render() {
+		if (this.state.location) {
+			const { location } = this.state;
+			return <Redirect to={location} />
+		}
+
+		return (
+			<>
+				{this.props.isLoading && <Loader></Loader>}
+				<h2 className="h2">Please select from the list of scavenger hunts below:</h2>
+				<CardColumns className="mt-5 cursor-pointer">
 					{Array.isArray(this.props.hunts) && this.props.hunts.map((hunt: Hunt) => (
-						<li key={hunt.huntId}>
-							<NavLink tag={Link} className="text-dark" to={`/hunt/${hunt.huntId}`}>{hunt.name}</NavLink>
-						</li>
+						<Card key={hunt.huntId} onClick={() => this.setState({ location: `/hunt/${hunt.huntId}`})}>
+							{hunt.image && <CardImg top src={hunt.image} alt={`${hunt.name}`} />}
+							<CardBody>
+								<CardTitle>{hunt.name}</CardTitle>
+								<CardText>{hunt.description}</CardText>
+							</CardBody>
+						</Card>
 					))}
-				</ul>
-			</div>
+				</CardColumns>
+			</>
 		)
 	}
 }

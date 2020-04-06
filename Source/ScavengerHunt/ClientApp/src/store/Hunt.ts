@@ -5,6 +5,8 @@ import { Hunt } from '../services/Hunt/Hunt';
 import { Page } from '../services/Hunt/Page';
 
 export interface HuntState {
+	huntTitle: string;
+	huntDescription: string;
 	isLoading: boolean;
 	page: Page;
 	message?: string;
@@ -16,6 +18,7 @@ const UPDATE_HUNT_FAILED = 'HUNT/UPDATE_FAILED';
 const NEXT_PAGE = 'HUNT/NEXT_PAGE';
 const SUBMITTING = 'HUNT/SUBMITTING';
 const INCORRECT_ANSWER = 'HUNT/INCORRECT_ANSWER';
+const CLEAR_HUNT = 'HUNT/CLEAR_HUNT';
 
 interface GetHuntAction extends Hunt {
 	type: typeof UPDATE_HUNT
@@ -29,8 +32,10 @@ interface NextPageAction extends Page {
 };
 interface IncorrectAnswerAction { type: typeof INCORRECT_ANSWER; message: string; };
 interface SubmittingAnswerAction { type: typeof SUBMITTING; };
+interface ClearHuntAction { type: typeof CLEAR_HUNT };
 
-type KnownAction = IncorrectAnswerAction | NextPageAction | SubmittingAnswerAction | GetHuntAction | GetHuntFailedAction;
+type KnownAction = IncorrectAnswerAction | NextPageAction | SubmittingAnswerAction
+	| GetHuntAction | GetHuntFailedAction | ClearHuntAction;
 
 export const actionCreators = {
 	getHunt: (huntId: number): AppThunkAction<KnownAction> => async (dispatch) => {
@@ -57,7 +62,7 @@ export const actionCreators = {
 
 		try {
 			let page;
-			if (huntStepId === -1) {
+			if (!huntStepId) {
 				page = await firstPage(huntId);
 			} else {
 				page = await submitResponse(answer, huntStepId);
@@ -69,30 +74,36 @@ export const actionCreators = {
 				content: page.content,
 				url: page.url,
 				isFinished: page.isFinished,
-				huntStepId: page.huntStepId
+				huntStepId: page.huntStepId,
+				image: page.image
 			});
-
+			return true;
 		} catch(err) {
 			dispatch({
 				type: INCORRECT_ANSWER,
 				message: err.message
 			});
+			return false;
 		}
-	}
+	},
+	clearHunt: (): AppThunkAction<KnownAction> => async (dispatch) => dispatch({ type: CLEAR_HUNT })
+};
+
+const defaultState = {
+	huntTitle: 'Scavenger Hunt',
+	huntDescription: '',
+	page: {
+		title: 'Hello Hunters!',
+		content: 'Welcome to the scavenger hunt! To continue, click the button below.',
+		isFinished: false
+	} as Page,
+	isLoading: false,
+	huntId: -1
 };
 
 export const reducer: Reducer<HuntState> = (state: HuntState | undefined, incomingAction: Action): HuntState => {
 	if (state === undefined) {
-		return {
-			page: {
-				title: 'Hello Hunters!',
-				content: 'Welcome to the scavenger hunt! To continue, click the button below.',
-				huntStepId: -1,
-				isFinished: false
-			},
-			isLoading: false,
-			huntId: -1
-		};
+		return defaultState;
 	}
 
 	if (state.message)
@@ -104,11 +115,9 @@ export const reducer: Reducer<HuntState> = (state: HuntState | undefined, incomi
 			return {
 				...state,
 				huntId: action.huntId,
-				page: {
-					...state.page,
-					title: action.name,
-					content: action.description
-				},
+				huntTitle: action.name,
+				huntDescription: action.description,
+				page: { } as Page,
 				isLoading: false
 			};
 		case NEXT_PAGE:
@@ -136,6 +145,11 @@ export const reducer: Reducer<HuntState> = (state: HuntState | undefined, incomi
 			return {
 				...state,
 				isLoading: true
+			};
+		case CLEAR_HUNT:
+			return {
+				...state,
+				page: defaultState.page
 			};
 		default:
 			return state;

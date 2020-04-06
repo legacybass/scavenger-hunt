@@ -37,6 +37,10 @@ code {
 	}
 }
 
+.cursor-pointer {
+	cursor: pointer;
+}
+
 [class*="loader-"] {
 	display: inline-block;
 	width: var(--loader-size, 100%);

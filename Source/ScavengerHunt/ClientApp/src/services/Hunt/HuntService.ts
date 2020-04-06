@@ -24,7 +24,7 @@ export const getHunt = async (huntId?: number, huntName?: string) => {
 	if (response.ok)
 		return await response.json() as Hunt;
 	else
-		throw createError(response, 'That hunt could not be found');
+		throw await createError(response, 'That hunt could not be found');
 }
 
 export const getHunts = async () => {
@@ -35,7 +35,7 @@ export const getHunts = async () => {
 	if(response.ok)
 		return await response.json() as ReadonlyArray<Hunt>;
 	else
-		throw createError(response, 'No hunts could be found');
+		throw await createError(response, 'No hunts could be found');
 }
 
 export const firstPage = async (page: number | string) => {
@@ -45,7 +45,7 @@ export const firstPage = async (page: number | string) => {
 	if (response.ok)
 		return await response.json() as Page;
 	else
-		throw new Error('No first step could be found');
+		throw await createError(response, 'No first step could be found');
 }
 
 export const submitResponse = async (answer: string, page: number | string) => {
