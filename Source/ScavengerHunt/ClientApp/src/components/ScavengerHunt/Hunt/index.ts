@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import { ApplicationState } from '../../store';
-import { actionCreators } from '../../store/Hunt';
+import { ApplicationState } from '../../../store';
+import { actionCreators } from '../../../store/Hunt';
 import { Hunt } from './Hunt';
 
 export default connect(

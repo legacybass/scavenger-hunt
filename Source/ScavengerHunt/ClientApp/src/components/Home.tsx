@@ -1,24 +1,23 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { NavLink } from 'reactstrap';
-import { Link } from 'react-router-dom';
 
 const Home = () => (
 	<main>
-		<h1>Welcome Hunters!</h1>
-		<p>
-			This is just a simple site to help us all keep a little more of our sanity as we are kept isolate from
-			each other and the rest of the world. We have gathered together a series of clues and made a very simple
-			scavenger hunt we all can enjoy. Some of the clues can be tricky, so keep at it and try your best. You may,
-			of course, ask friends for the answers, but that defeats the fun of the game. So try your best and see how far you get!
+		<h1 className="h1">Welcome All!</h1>
+		<p className="lead">
+			Welcome to this site! Since everyone is currently locked down and unable to go out and do things, I decided
+			to try and help by making something that can get us engaged. This site provides us with the opportunity to
+			create our own community style game types and publish them for others to enjoy.
 		</p>
 		<p>
-			To begin the scavenger hunt, click the "Hunt!" link at the top of the page in the navigation bar (or click
-			<NavLink className="d-inline p-1" tag={Link} to="/hunt">here</NavLink>) and the race is on! The site will
-			track your progress as long as you're on the same computer. If you switch devices, though, you'll need to
-			start over. If you would like to start over simply for the fun of it, well then I guess you're just a
-			glutton for punishment; but you can do that
-			<NavLink className="d-inline p-1" tag={Link} to="/clear">here</NavLink>).
+			Each game type can be accessed from the navigation menu at the top of the page. Currently, only scavenger
+			hunts have been created, and so only they show up. As more game types are made available, they will also
+			show up in the menu.
+		</p>
+		<p>
+			If you have ideas for game types, please feel free to contact me and submit them (this includes any new
+			scavenger hunts) and I will get them entered as soon as I am able. Please be patient, I'm creating this
+			all on my own and it does take time.
 		</p>
 		<p>
 			Have fun!

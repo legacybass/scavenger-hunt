@@ -1,5 +1,5 @@
 const environment = {
-	apiUrl: process.env.API || 'http://localhost:61051',
+	apiUrl: process.env.API || 'http://localhost:61051/ScavengerHunt/',
 	game: process.env.GAME || 'CoronaVirus'
 };
 

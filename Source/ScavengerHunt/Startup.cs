@@ -1,11 +1,17 @@
+using AutoMapper;
+using EFRepository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ScavengerHunt.Data;
+using ScavengerHunt.Hunts;
+using ScavengerHunt.Hunts.Implementation;
 
 namespace ScavengerHunt
 {
@@ -28,6 +34,19 @@ namespace ScavengerHunt
 			{
 				configuration.RootPath = "ClientApp/build";
 			});
+
+			services.AddDbContext<ScavengerHuntContext>(builder =>
+			{
+				string connectionString = Configuration.GetConnectionString("scavengerhunt");
+				builder.UseSqlServer(connectionString);
+			});
+
+			services.AddTransient<DbContext, ScavengerHuntContext>();
+			services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+			services.AddTransient<IHuntService, HuntService>();
+
+			services.AddAutoMapper(GetType().Assembly);
+			services.AddCors();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +63,12 @@ namespace ScavengerHunt
 				app.UseHsts();
 			}
 
+			app.UseCors(options =>
+			{
+				options.AllowAnyOrigin();
+				options.AllowAnyMethod();
+				options.AllowAnyHeader();
+			});
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 			app.UseSpaStaticFiles();
@@ -55,11 +80,11 @@ namespace ScavengerHunt
 				endpoints.MapAreaControllerRoute(
 					name: "ScavengerHunt",
 					areaName: "ScavengerHunt",
-					pattern: "ScavengerHunt/{controller}/{action=Get}/{id?}");
+					pattern: "ScavengerHunt/api/{controller}/{action=Get}/{id?}");
 
 				endpoints.MapControllerRoute(
 					name: "default",
-					pattern: "{controller}/{action=Get}/{id?}");
+					pattern: "/api/{controller}/{action=Get}/{id?}");
 			});
 
 			app.UseSpa(spa =>
