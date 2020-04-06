@@ -38,27 +38,55 @@ namespace ScavengerHunt.Hunts.Tests
 		[InlineData(1, "  test ", "test")]
 		[InlineData(1, "Test", "test")]
 		[InlineData(1, "test", "Test")]
+		[InlineData(1, "test", "   test  ")]
 		public async Task CheckResponse_GetsCorrectSingleActionResponse(int huntStepId, string response, string correctResponse)
 		{
+			// Arrange
+			int correctStepId = 1,
+				nextStepId = 73;
+
+			var nextStep = new Data.HuntStep
+			{
+				HuntStepId = nextStepId,
+				Previous = correctStepId
+			};
+
+			var correctStep = new Data.HuntStepLink
+			{
+				HuntStepLinkId = correctStepId,
+				CorrectResponse = correctResponse,
+				CurrentStep = huntStepId,
+				NextStep = nextStepId
+			};
+
+			nextStep.PreviousStep = correctStep;
+
 			var retrievedStep = new Data.HuntStep
 			{
 				HuntStepId = huntStepId,
 				NextSteps = new List<Data.HuntStepLink>
 				{
+					correctStep,
 					new Data.HuntStepLink
 					{
-						HuntStepLinkId = 1,
-						CorrectResponse = correctResponse
+						HuntStepLinkId = 2,
+						CorrectResponse = " this is always the incorrect response",
+						CurrentStep = huntStepId,
+						NextStep = 42
 					}
 				}
 			};
 
+			correctStep.Current = retrievedStep;
+
 			var findOneCall = A.CallTo(() => HuntStepRepository.FindOne(huntStepId));
 			findOneCall.Returns(retrievedStep);
 
-			bool result = await Service.CheckResponse(huntStepId, response);
+			// Act
+			var result = await Service.CheckResponse(huntStepId, response);
 
-			result.ShouldBeTrue();
+			// Assert
+			result.HuntStepId.ShouldBe(nextStepId);
 
 			findOneCall.MustHaveHappenedOnceExactly();
 		}
