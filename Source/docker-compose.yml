@@ -1,0 +1,42 @@
+version: "3.7"
+
+volumes:
+  data-volume:
+
+services:
+  sh-mssql:
+    image: microsoft/mssql-server-windows-express
+    container_name: sh-mssql
+    stdin_open: true
+    tty: true
+    environment:
+      - ACCEPT_EULA=Y
+      - sa_password=:76/{<iA!)-ype9K2bS*?7H3E
+      - attach-dbs=[{'dbName':'ScavengerHunt','dbFiles':['C:\\data\\ScavengerHunt.mdf','C:\\data\\ScavengerHunt.ldf']}]
+      - MSSQL_PID=Express
+    expose:
+      - 1433
+    volumes:
+      - type: bind
+        source: D:\Apps\ScavengerHunt\Data\mssql
+        target: C:\data
+      # - D:\Apps\ScavengerHunt\Data\mssql:C:/data
+
+  sh-hunt:
+    image: sh-hunt
+    container_name: sh-hunt
+    hostname: sh-hunt
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+      dockerfile: ScavengerHunt\Dockerfile
+    depends_on:
+      - sh-mssql
+    environment:
+      ConnectionStrings:scavengerhunt: "Data Source=sh-mssql; Initial Catalog=ScavengerHunt; Uid=sa;Pwd=:76/{<iA!)-ype9K2bS*?7H3E"
+
+networks:
+  default:
+    external:
+      name: nat

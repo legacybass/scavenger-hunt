@@ -1,0 +1,16 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS downloads
+ARG nodever=12.16.2
+ARG arch=x64
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'STOP'; $ProgressPreference = 'SilentlyContinue';"]
+WORKDIR /downloads
+ADD ["https://nodejs.org/dist/v${nodever}/node-v${nodever}-win-${arch}.zip", "./node.zip"]
+RUN Expand-Archive node.zip -DestinationPath node;
+RUN Remove-Item -Force node.zip
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 as final
+ARG nodever=12.16.2
+ARG arch=x64
+COPY --from=downloads ["C:/downloads/node/node-v${nodever}-win-${arch}", "C:/Program Files/nodejs"]
+USER ContainerAdministrator
+RUN setx /M PATH "$Env:PATH;C:/Program Files/nodejs;C:/Program Files/dotnet;"
+USER ContainerUser
