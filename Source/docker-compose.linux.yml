@@ -1,0 +1,44 @@
+version: "3.3"
+
+services:
+  sh-mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sh-mssql
+    stdin_open: true
+    tty: true
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Bj2qKA5sI36H
+      - ATTACH_DBS=[{'dbName':'ScavengerHunt','dbFiles':['/var/opt/mssql/data/ScavengerHunt.mdf','/var/opt/mssql/data/ScavengerHunt_log.ldf']}]
+      - MSSQL_PID=Express
+    expose:
+      - "1433"
+    volumes:
+      - type: bind
+        source: /data/dbeus/ScavengerHunt/data
+        target: /var/opt/mssql/data
+
+  sh-hunt:
+    image: docker.dev.mfire.co/sh-hunt
+    container_name: sh-hunt
+    hostname: sh-hunt
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+      dockerfile: ScavengerHunt/Dockerfile_linux
+    expose:
+      - 80
+      - 443
+    depends_on:
+      - sh-mssql
+    environment:
+      - VIRTUAL_HOST=hunt.legacybass.tech
+      - LETSENCRYPT_HOST=hunt.legacybass.tech
+      - "ConnectionStrings__scavengerhunt=Data Source=sh-mssql; Initial Catalog=ScavengerHunt; Uid=sa;Pwd=Bj2qKA5sI36H"
+    volumes:
+      - type: bind
+        source: /data/dbeus/ScavengerHunt/images
+        target: /app/wwwroot/hunt
+      - /data/dbeus/ScavengerHunt/keys:/root/.aspnet/DataProtection-Keys
+

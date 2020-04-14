@@ -1,0 +1,9 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster
+ARG NODE_VERSION=12.16.2
+ARG ARCH=x64
+ARG YARN_VERSION=1.12.3
+
+RUN apt-get update \
+	&& apt-get install curl \
+	&& curl -sL https://deb.nodesource.com/setup_13.x | bash - \
+	&& apt-get install -y nodejs
