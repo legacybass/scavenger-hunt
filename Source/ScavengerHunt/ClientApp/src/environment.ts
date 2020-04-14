@@ -1,6 +1,9 @@
-const environment = {
-	apiUrl: process.env.API || 'http://localhost:61051/ScavengerHunt/',
-	game: process.env.GAME || 'CoronaVirus'
+interface IEnvironment {
+	apiUrl: string;
+}
+
+const environment: IEnvironment = {
+	apiUrl: process.env.REACT_APP_API || ''
 };
 
 Object.freeze(environment);

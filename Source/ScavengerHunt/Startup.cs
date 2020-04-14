@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using ScavengerHunt.Data;
 using ScavengerHunt.Hunts;
 using ScavengerHunt.Hunts.Implementation;
@@ -17,6 +18,8 @@ namespace ScavengerHunt
 {
 	public class Startup
 	{
+		protected ILogger<Startup> Logger { get; set; }
+
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -38,6 +41,7 @@ namespace ScavengerHunt
 			services.AddDbContext<ScavengerHuntContext>(builder =>
 			{
 				string connectionString = Configuration.GetConnectionString("scavengerhunt");
+				Logger.LogDebug($"Connecting to: {connectionString}");
 				builder.UseSqlServer(connectionString);
 			});
 
@@ -96,6 +100,8 @@ namespace ScavengerHunt
 					spa.UseReactDevelopmentServer(npmScript: "start");
 				}
 			});
+
+			Logger = app.ApplicationServices.GetService<ILogger<Startup>>();
 		}
 	}
 }
