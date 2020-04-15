@@ -21,6 +21,7 @@
     <ProjectReference Include="..\ScavengerHunt.Data\ScavengerHunt.Data.csproj" />
     <ProjectReference Include="..\ScavengerHunt.Hunts.Implementation\ScavengerHunt.Hunts.Implementation.csproj" />
     <ProjectReference Include="..\ScavengerHunt.Hunts\ScavengerHunt.Hunts.csproj" />
+    <ProjectReference Include="..\ScavengerHunt\ScavengerHunt.csproj" />
   </ItemGroup>
 
 </Project>

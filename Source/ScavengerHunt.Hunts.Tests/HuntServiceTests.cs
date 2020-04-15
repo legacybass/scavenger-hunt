@@ -10,6 +10,7 @@ using FakeItEasy;
 using Shouldly;
 using System.Collections.Generic;
 using System.Linq;
+using ScavengerHunt.Mapping;
 
 namespace ScavengerHunt.Hunts.Tests
 {
@@ -25,11 +26,18 @@ namespace ScavengerHunt.Hunts.Tests
 
 		public HuntServiceTests()
 		{
-			Mapper = A.Fake<IMapper>();
 			Logger = A.Dummy<ILogger<HuntService>>();
 			HuntRepository = A.Fake<IRepository<Data.Hunt>>();
 			HuntStepRepository = A.Fake<IRepository<Data.HuntStep>>();
 			HuntStepLinkRepository = A.Fake<IRepository<Data.HuntStepLink>>();
+
+			var config = new MapperConfiguration(cfg =>
+			{
+				cfg.AddProfile<ScavengerHuntMap>();
+			});
+
+			Mapper = config.CreateMapper();
+
 			Service = new HuntService(HuntRepository, HuntStepRepository, HuntStepLinkRepository, Mapper, Logger);
 		}
 
@@ -56,7 +64,8 @@ namespace ScavengerHunt.Hunts.Tests
 				HuntStepLinkId = correctStepId,
 				CorrectResponse = correctResponse,
 				CurrentStep = huntStepId,
-				NextStep = nextStepId
+				NextStep = nextStepId,
+				Next = nextStep
 			};
 
 			nextStep.PreviousStep = correctStep;
@@ -79,16 +88,14 @@ namespace ScavengerHunt.Hunts.Tests
 
 			correctStep.Current = retrievedStep;
 
-			var findOneCall = A.CallTo(() => HuntStepRepository.FindOne(huntStepId));
-			findOneCall.Returns(retrievedStep);
+			A.CallTo(() => HuntStepLinkRepository.Entity).Returns(retrievedStep.NextSteps.AsQueryable());
 
 			// Act
 			var result = await Service.CheckResponse(huntStepId, response);
 
 			// Assert
+			result.ShouldNotBeNull();
 			result.HuntStepId.ShouldBe(nextStepId);
-
-			findOneCall.MustHaveHappenedOnceExactly();
 		}
 
 		[Theory]
@@ -97,7 +104,8 @@ namespace ScavengerHunt.Hunts.Tests
 		{
 			var step = new Data.HuntStep
 			{
-				HuntStepId = 3
+				HuntStepId = 3,
+				HuntId = huntId
 			};
 
 			var hunt = new Data.Hunt
@@ -108,24 +116,54 @@ namespace ScavengerHunt.Hunts.Tests
 					new Data.HuntStep
 					{
 						HuntStepId = 1,
-						Previous = 2
+						Previous = 2,
+						HuntId = huntId
 					},
 					new Data.HuntStep
 					{
 						HuntStepId = 2,
-						Previous = 4
+						Previous = 4,
+						HuntId = huntId
 					},
 					step,
 					new Data.HuntStep
 					{
 						HuntStepId = 4,
-						Previous = 3
+						Previous = 3,
+						HuntId = huntId
 					}
 				}
 			};
 
-			var queryable = new List<Data.Hunt>() { hunt };
+			var unused = new Data.Hunt
+			{
+				HuntId = huntId + 1,
+				HuntSteps = new List<Data.HuntStep>
+				{
+					new Data.HuntStep
+					{
+						HuntStepId = 5,
+						Previous = null,
+						HuntId = huntId + 1
+					},
+					new Data.HuntStep
+					{
+						HuntStepId = 6,
+						Previous = 5,
+						HuntId = huntId + 1
+					},
+					new Data.HuntStep
+					{
+						HuntStepId = 7,
+						Previous = 6,
+						HuntId = huntId + 1
+					}
+				}
+			};
+
+			var queryable = new List<Data.Hunt>() { hunt, unused };
 			A.CallTo(() => HuntRepository.Entity).Returns(queryable.AsQueryable());
+			A.CallTo(() => HuntStepRepository.Entity).Returns(hunt.HuntSteps.Concat(unused.HuntSteps).AsQueryable());
 
 			var actual = await Service.GetFirstStep(huntId);
 

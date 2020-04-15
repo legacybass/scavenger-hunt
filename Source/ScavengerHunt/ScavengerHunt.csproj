@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\ScavengerHunt\ClientApp\" />
+    <Folder Include="Controllers\" />
   </ItemGroup>
 
   <ItemGroup>

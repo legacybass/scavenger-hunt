@@ -51,7 +51,7 @@ namespace ScavengerHunt.Hunts.Implementation
 				{
 					return ns.CorrectResponse.Split('|').Any(cr => cr.Trim().ToLowerInvariant() == response);
 				}
-				else if (ns.CorrectResponse.ToLowerInvariant() == response)
+				else if (ns.CorrectResponse.Trim().ToLowerInvariant() == response)
 					return true;
 
 				return false;
